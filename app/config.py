@@ -10,6 +10,9 @@ BASE_DIR = Path(__file__).parent.parent
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
 
+    llm_timeout_seconds: float = 30
+    llm_max_retries: int = 2
+
     # app
     log_level: str = "INFO"
 

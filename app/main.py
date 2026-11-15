@@ -5,9 +5,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from langfuse import Langfuse
 
+from app.api.errors import app_error_handler
 from app.api.routes import chat, health
 from app.bootstrap import build_agent
 from app.config import get_settings
+from app.errors import AppError
 from app.logging import setup_logging
 from app.middleware import AccessLogMiddleware
 
@@ -27,7 +29,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Acme Support GenAI", lifespan=lifespan)
-
+app.add_exception_handler(AppError, app_error_handler)
 app.add_middleware(AccessLogMiddleware)
 app.include_router(chat.router)
 app.include_router(health.router)
