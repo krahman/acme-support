@@ -1,0 +1,1 @@
+SLA: Team plan has 99.9% uptime SLA with service credits. Pro plan is best-effort.

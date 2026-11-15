@@ -1,0 +1,1 @@
+Refund policy: Pro and Team plans get a full refund within 14 days of purchase. After 14 days, refunds are prorated. Free plan has no refunds.

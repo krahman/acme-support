@@ -1,0 +1,1 @@
+Plans: Free ($0), Pro ($20/month), Team ($50/user/month). Team includes SSO and audit logs.
