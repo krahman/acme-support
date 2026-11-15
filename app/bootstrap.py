@@ -3,7 +3,7 @@ from langgraph.graph.state import CompiledStateGraph
 
 from app.ai.guardrails import make_scope_checker
 from app.ai.llm import build_llm
-from app.ai.rag.store import build_vector_store
+from app.ai.rag.store import get_vector_store
 from app.ai.tools.knowledge import make_search_tool
 from app.ai.tools.orders import ORDERS, make_order_tool
 from app.config import Settings
@@ -11,7 +11,7 @@ from app.graph import build_graph
 
 
 def build_agent(settings: Settings) -> CompiledStateGraph:
-    store = build_vector_store(settings)
+    store = get_vector_store(settings)
     tools = [
         make_search_tool(store, settings.retrieval_k, settings.retrieval_score_threshold),
         make_order_tool(ORDERS),

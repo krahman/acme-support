@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     # RAG
     kb_dir: Path = BASE_DIR / "knowledge_base"
+    index_dir: Path = BASE_DIR / ".index"
     chunk_size: int = 300
     chunk_overlap: int = 30
     retrieval_k: int = 2
