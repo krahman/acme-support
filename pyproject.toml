@@ -1,0 +1,15 @@
+[project]
+name = "genai"
+version = "0.1.0"
+requires-python = ">=3.14.7"
+dependencies = [
+    "fastapi>=0.115",
+    "langchain-core>=0.3",
+    "langchain-openai>=0.2",
+    "langchain-text-splitters>=0.3",
+    "langfuse>=3.0",
+    "langgraph>=0.2",
+    "numpy>=2.5.4",
+    "python-dotenv>=1.2.4",
+    "uvicorn[standard]>=0.30",
+]
