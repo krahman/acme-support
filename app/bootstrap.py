@@ -1,6 +1,7 @@
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph.state import CompiledStateGraph
 
+from app.ai.guardrails import make_scope_checker
 from app.ai.llm import build_llm
 from app.ai.rag.store import build_vector_store
 from app.ai.tools.knowledge import make_search_tool
@@ -15,7 +16,8 @@ def build_agent(settings: Settings) -> CompiledStateGraph:
         make_search_tool(store, settings.retrieval_k, settings.retrieval_score_threshold),
         make_order_tool(ORDERS),
     ]
-    return build_graph(build_llm(settings), tools)
+    is_in_scope = make_scope_checker(store, settings.scope_score_threshold)
+    return build_graph(build_llm(settings), tools, is_in_scope)
 
 
 def run(

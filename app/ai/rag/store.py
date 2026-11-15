@@ -1,4 +1,3 @@
-from langchain_core.retrievers import BaseRetriever
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -18,18 +17,3 @@ def build_vector_store(settings: Settings) -> InMemoryVectorStore:
         api_key=settings.openai_api_key,
     )
     return InMemoryVectorStore.from_documents(chunks, embeddings)
-
-def build_retriever(settings: Settings) -> BaseRetriever:
-    docs = load_documents(settings.kb_dir)
-    chunks = RecursiveCharacterTextSplitter(
-        chunk_size=settings.chunk_size,
-        chunk_overlap=settings.chunk_overlap,
-    ).split_documents(docs)
-    embeddings = OpenAIEmbeddings(
-        model=settings.embedding_model,
-        api_key=settings.openai_api_key,
-    )
-    store = InMemoryVectorStore.from_documents(chunks, embeddings)
-    return store.as_retriever(
-        search_kwargs={"k": settings.retrieval_k},
-    )

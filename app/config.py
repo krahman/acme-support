@@ -29,7 +29,8 @@ class Settings(BaseSettings):
     chunk_size: int = 300
     chunk_overlap: int = 30
     retrieval_k: int = 2
-    retrieval_score_threshold: float = 0.35
+    retrieval_score_threshold: float = 0.2
+    scope_score_threshold: float = 0.2
 
 
 @lru_cache

@@ -14,8 +14,10 @@ def get_graph(request: Request) -> CompiledStateGraph:
 def get_langfuse(request: Request) -> Langfuse:
     return request.app.state.langfuse
 
+
 def get_chat_service(graph: GraphDependency) -> ChatService:
-  return ChatService(graph)
+    return ChatService(graph)
+
 
 GraphDependency = Annotated[CompiledStateGraph, Depends(get_graph)]
 LangfuseDependency = Annotated[Langfuse, Depends(get_langfuse)]

@@ -1,8 +1,7 @@
 import logging
 import re
-import uuid
-
 import time
+import uuid
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -12,6 +11,7 @@ from app.logging import request_id_var
 log = logging.getLogger("genai.access")
 
 _VALID_RID = re.compile(r"^[A-Za-z0-9-]{1,64}$")
+
 
 class AccessLogMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):

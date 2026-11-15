@@ -1,11 +1,8 @@
 """FastAPI service with Langfuse tracing + basic observability."""
 
-import logging
-import time
-import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from langfuse import Langfuse
 
 from app.api.routes import chat, health
@@ -13,9 +10,6 @@ from app.bootstrap import build_agent
 from app.config import get_settings
 from app.logging import setup_logging
 from app.middleware import AccessLogMiddleware
-
-logging.basicConfig(level=logging.INFO, format='{"ts":"%(asctime)s","lvl":"%(levelname)s","msg":%(message)s}')
-log = logging.getLogger("genai")
 
 
 @asynccontextmanager

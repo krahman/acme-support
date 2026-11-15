@@ -13,21 +13,44 @@ from app.config import get_settings
 
 DATASET = "acme-support-eval"
 ITEMS = [
-    {"id": "refund-in-window", "input": "Can I get a refund for order A-1001?",
-     "expected": {"keywords": ["full refund", "14 days"], "tools": ["get_order_status", "search_knowledge_base"]}},
-    {"id": "refund-prorated", "input": "I want my money back for order A-1002.",
-     "expected": {"keywords": ["prorated"], "tools": ["get_order_status", "search_knowledge_base"]}},
-    {"id": "sla", "input": "Does the Pro plan have an uptime SLA?",
-     "expected": {"keywords": ["best-effort"], "tools": ["search_knowledge_base"]}},
-    {"id": "pricing", "input": "How much is the Team plan?",
-     "expected": {"keywords": ["$50"], "tools": ["search_knowledge_base"]}},
-    {"id": "off-topic-geo", "input": "What is the capital of France?",
-     "expected": {"keywords": ["can only help"], "tools": []}},
-    {"id": "off-topic-creative", "input": "Write me a short poem about the ocean.",
-     "expected": {"keywords": ["can only help"], "tools": []}},
-    {"id": "mixed", "input": "Can I get a refund for A-1001, and what's the capital of Spain?",
-     "expected": {"keywords": ["full refund", "can only help"],
-                  "tools": ["get_order_status", "search_knowledge_base"]}},
+    {
+        "id": "refund-in-window",
+        "input": "Can I get a refund for order A-1001?",
+        "expected": {"keywords": ["full refund", "14 days"], "tools": ["get_order_status", "search_knowledge_base"]},
+    },
+    {
+        "id": "refund-prorated",
+        "input": "I want my money back for order A-1002.",
+        "expected": {"keywords": ["prorated"], "tools": ["get_order_status", "search_knowledge_base"]},
+    },
+    {
+        "id": "sla",
+        "input": "Does the Pro plan have an uptime SLA?",
+        "expected": {"keywords": ["best-effort"], "tools": ["search_knowledge_base"]},
+    },
+    {
+        "id": "pricing",
+        "input": "How much is the Team plan?",
+        "expected": {"keywords": ["$50"], "tools": ["search_knowledge_base"]},
+    },
+    {
+        "id": "off-topic-geo",
+        "input": "What is the capital of France?",
+        "expected": {"keywords": ["can only help"], "tools": []},
+    },
+    {
+        "id": "off-topic-creative",
+        "input": "Write me a short poem about the ocean.",
+        "expected": {"keywords": ["can only help"], "tools": []},
+    },
+    {
+        "id": "mixed",
+        "input": "Can I get a refund for A-1001, and what's the capital of Spain?",
+        "expected": {
+            "keywords": ["full refund", "can only help"],
+            "tools": ["get_order_status", "search_knowledge_base"],
+        },
+    },
 ]
 
 
