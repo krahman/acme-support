@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     db_pool_max_size: int = 10
     session_retention_days: int = Field(default=30, gt=0)  # idle converstations older than this get purged
     db_timeout_seconds: float = 5  # startup wait and per-request wait for a working connection
+    db_lock_pool_max_size: int = 20  # once connection per running turn: size it above your expected concurrent chats
 
 
 @lru_cache

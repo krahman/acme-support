@@ -34,3 +34,9 @@ class StorageUnavailableError(AppError):
     status_code = 503
     code = "storage_unavailable"
     message = "Conversation storage is temporarily unavailable. Please try again shortly."
+
+
+class SessionBusyError(AppError):
+    status_code = 409
+    code = "session_busy"
+    message = "Your previous message in this conversation is still being answered. Please wait and try again."

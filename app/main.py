@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from langfuse import Langfuse
 
 from app.ai.checkpointer import open_checkpointer
+from app.ai.locks import open_session_locks
 from app.ai.sessions import make_session_store
 from app.api.errors import app_error_handler
 from app.api.routes import chat, health
@@ -25,9 +26,10 @@ async def lifespan(app: FastAPI):
         secret_key=settings.langfuse_secret_key.get_secret_value(),
         host=settings.langfuse_host,
     )
-    with open_checkpointer(settings) as checkpointer:
+    with open_checkpointer(settings) as checkpointer, open_session_locks(settings) as locks:
         app.state.graph = build_agent(settings, checkpointer)
         app.state.sessions = make_session_store(checkpointer)
+        app.state.locks = locks
         yield
     app.state.langfuse.flush()  # don't lose buffered traces on shutdown
 

@@ -6,6 +6,7 @@ from langfuse.langchain import CallbackHandler
 from langgraph.errors import GraphRecursionError
 from langgraph.graph.state import CompiledStateGraph
 
+from app.ai.locks import InProcessLocks, SessionLocks
 from app.ai.sessions import NullSessionStore, SessionStore
 from app.api.schema import ChatRequest, ChatResponse
 from app.bootstrap import run
@@ -19,21 +20,28 @@ from app.errors import (
 
 
 class ChatService:
-    def __init__(self, graph: CompiledStateGraph, sessions: SessionStore | None = None) -> None:
+    def __init__(
+        self,
+        graph: CompiledStateGraph,
+        sessions: SessionStore | None = None,
+        locks: SessionLocks | None = None,
+    ) -> None:
         self._graph = graph
         self._sessions = sessions or NullSessionStore()
+        self._locks = locks or InProcessLocks()
 
     def chat(self, req: ChatRequest) -> ChatResponse:
         session_id = str(req.session_id or uuid.uuid4())
         try:
-            self._sessions.touch(session_id)  # before the turn: the clock starts even if the turn fails
-            handler = CallbackHandler()
-            result = run(
-                self._graph,
-                req.message,
-                callbacks=[handler],
-                session_id=session_id,
-            )
+            with self._locks.hold(session_id):
+                self._sessions.touch(session_id)
+                handler = CallbackHandler()
+                result = run(
+                    self._graph,
+                    req.message,
+                    callbacks=[handler],
+                    session_id=session_id,
+                )
         except openai.APITimeoutError as e:  # before APIConnectionError: it is a subclass
             raise UpstreamTimeoutError() from e
         except (openai.APIConnectionError, openai.RateLimitError, openai.InternalServerError) as e:
