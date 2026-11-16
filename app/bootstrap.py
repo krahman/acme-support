@@ -1,7 +1,10 @@
+import uuid
+
 from langchain_core.runnables import RunnableConfig
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.state import CompiledStateGraph
 
-from app.ai.guardrails import make_scope_checker
+from app.ai.guardrails import current_turn, make_scope_checker
 from app.ai.llm import build_llm
 from app.ai.rag.store import get_vector_store
 from app.ai.tools.knowledge import make_search_tool
@@ -17,7 +20,7 @@ def build_agent(settings: Settings) -> CompiledStateGraph:
         make_order_tool(ORDERS),
     ]
     is_in_scope = make_scope_checker(store, settings.scope_score_threshold)
-    return build_graph(build_llm(settings), tools, is_in_scope)
+    return build_graph(build_llm(settings), tools, is_in_scope, InMemorySaver(), settings.history_max_messages)
 
 
 def run(
@@ -27,11 +30,13 @@ def run(
     session_id: str | None = None,
 ) -> dict:
     """Single entrypoint shared by the API and the eval runner."""
-    config: RunnableConfig = {"callbacks": callbacks or []}
-    if session_id:
-        config["metadata"] = {"langfuse_session_id": session_id}
-
+    session_id = session_id or str(uuid.uuid4())  # no id: a fresh one-off conversation
+    config: RunnableConfig = RunnableConfig(
+        callbacks=callbacks or [],
+        configurable={"thread_id": session_id},
+        metadata={"langfuse_session_id": session_id},
+    )
     out = graph.invoke({"messages": [("user", question)]}, config=config)
 
-    tools_used = [tc["name"] for m in out["messages"] for tc in getattr(m, "tool_calls", []) or []]
-    return {"answer": out["messages"][-1].content, "tools_used": tools_used}
+    tools_used = [tc["name"] for m in current_turn(out["messages"]) for tc in getattr(m, "tool_calls", []) or []]
+    return {"answer": out["messages"][-1].content, "tools_used": tools_used, "session_id": session_id}

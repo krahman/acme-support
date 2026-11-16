@@ -15,7 +15,12 @@ class ChatService:
     def chat(self, req: ChatRequest) -> ChatResponse:
         try:
             handler = CallbackHandler()
-            result = run(self._graph, req.message, callbacks=[handler], session_id=req.session_id)
+            result = run(
+                self._graph,
+                req.message,
+                callbacks=[handler],
+                session_id=str(req.session_id) if req.session_id else None,
+            )
         except openai.APITimeoutError as e:  # before APIConnectionError: it is a subclass
             raise UpstreamTimeoutError() from e
         except (openai.APIConnectionError, openai.RateLimitError, openai.InternalServerError) as e:
@@ -24,4 +29,7 @@ class ChatService:
             raise UpstreamRejectedError() from e
         except GraphRecursionError as e:
             raise AgentLoopError() from e
-        return ChatResponse(**result, trace_id=handler.last_trace_id)
+        return ChatResponse(
+            **result,
+            trace_id=handler.last_trace_id,
+        )

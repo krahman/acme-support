@@ -1,6 +1,7 @@
 import re
+from collections.abc import Sequence
 
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import BaseMessage, ToolMessage
 from langchain_core.vectorstores import InMemoryVectorStore
 
 from app.ai.tools.knowledge import NO_RESULTS
@@ -19,10 +20,15 @@ def make_scope_checker(store: InMemoryVectorStore, threshold: float):
     return is_in_scope
 
 
-def has_evidence(messages) -> bool:
-    """True if a tool returned usable data since the latest user message."""
+def current_turn(messages: Sequence[BaseMessage]) -> list[BaseMessage]:
+    """Everything after the latest user message, i.e. what this turn produced."""
     last_human = max(i for i, m in enumerate(messages) if m.type == "human")
-    for m in messages[last_human + 1 :]:
+    return list(messages[last_human + 1 :])
+
+
+def has_evidence(messages) -> bool:
+    """True if a tool returned usable data during the current turn."""
+    for m in current_turn(messages):
         if isinstance(m, ToolMessage) and m.status != "error":
             content = str(m.content)
             if content != NO_RESULTS and '"error"' not in content:

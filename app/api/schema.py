@@ -1,14 +1,15 @@
-from pydantic import BaseModel, Field
+from pydantic import UUID4, BaseModel, Field
 
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
-    session_id: str | None = Field(default=None, max_length=64)
+    session_id: UUID4 | None = None
 
 
 class ChatResponse(BaseModel):
     answer: str
     tools_used: list[str]
+    session_id: str
     trace_id: str | None
 
 

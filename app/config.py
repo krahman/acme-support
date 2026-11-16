@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     retrieval_score_threshold: float = 0.2
     scope_score_threshold: float = 0.2
 
+    # conversation
+    history_max_messages: int = 10
+
 
 @lru_cache
 def get_settings() -> Settings:
