@@ -25,9 +25,9 @@ class Settings(BaseSettings):
     # models
     chat_model: str = "gpt-4o-mini"
     temperature: float = 0.0
-    embedding_model: str = "text-embedding-3-small"
 
     # RAG
+    embedding_model: str = "text-embedding-3-small"
     kb_dir: Path = BASE_DIR / "knowledge_base"
     index_dir: Path = BASE_DIR / ".index"
     chunk_size: int = 300
@@ -43,9 +43,10 @@ class Settings(BaseSettings):
     database_url: SecretStr | None = None  # unset: sessions live in memory
     db_pool_min_size: int = 1  # idle connections go stale on a DB restart; fewer means faster recovery
     db_pool_max_size: int = 10
-    session_retention_days: int = Field(default=30, gt=0)  # idle converstations older than this get purged
+    session_retention_days: int = Field(default=30, gt=0)  # idle conversations older than this get purged
     db_timeout_seconds: float = 5  # startup wait and per-request wait for a working connection
     db_lock_pool_max_size: int = 20  # once connection per running turn: size it above your expected concurrent chats
+    kb_indexes_to_keep: int = Field(default=2, ge=1)  # newest knowledge-base indexes the purge job keeps
 
 
 @lru_cache

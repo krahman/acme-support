@@ -2,15 +2,15 @@ import re
 from collections.abc import Sequence
 
 from langchain_core.messages import BaseMessage, ToolMessage
-from langchain_core.vectorstores import InMemoryVectorStore
 
+from app.ai.rag.types import SimilarityStore
 from app.ai.tools.knowledge import NO_RESULTS
 
 REFUSAL = "I can only help with Acme Cloud policy and order questions."
 ORDER_ID_RE = re.compile(r"\b[A-Z]-\d{4}\b", re.IGNORECASE)
 
 
-def make_scope_checker(store: InMemoryVectorStore, threshold: float):
+def make_scope_checker(store: SimilarityStore, threshold: float):
     def is_in_scope(text: str) -> bool:
         if ORDER_ID_RE.search(text):
             return True

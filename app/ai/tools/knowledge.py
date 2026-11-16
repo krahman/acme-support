@@ -1,10 +1,11 @@
 from langchain_core.tools import tool
-from langchain_core.vectorstores import InMemoryVectorStore
+
+from app.ai.rag.types import SimilarityStore
 
 NO_RESULTS = "No relevant documents found."
 
 
-def make_search_tool(store: InMemoryVectorStore, k: int, score_threshold: float):
+def make_search_tool(store: SimilarityStore, k: int, score_threshold: float):
     @tool
     def search_knowledge_base(query: str) -> str:
         """Search Acme Cloud policy docs (refunds, pricing, SLA)."""

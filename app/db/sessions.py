@@ -4,13 +4,15 @@ from typing import Protocol
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.postgres import PostgresSaver
 
+from app.db.advisory import schema_lock
+
 
 class SessionStore(Protocol):
     def touch(self, session_id: str) -> None:
         """Record that the session was just used (starts or resets its retention clock)."""
 
     def purge_expired(self, older_than: timedelta) -> int:
-        """Delete sessions idle for longer than 'older_than', with their converstations. Returns how many."""
+        """Delete sessions idle for longer than 'older_than', with their conversations. Returns how many."""
 
 
 class NullSessionStore:
@@ -31,7 +33,7 @@ class PostgresSessionStore:
         self._pool = saver.conn
 
     def setup(self) -> None:
-        with self._pool.connection() as conn:
+        with schema_lock(self._pool), self._pool.connection() as conn:
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS chat_sessions (

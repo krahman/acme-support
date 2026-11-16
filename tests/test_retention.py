@@ -7,12 +7,12 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
-from app.ai.checkpointer import open_checkpointer
-from app.ai.purge import purge
-from app.ai.sessions import NullSessionStore, make_session_store
 from app.bootstrap import run
+from app.db.checkpointer import open_checkpointer
+from app.db.sessions import NullSessionStore, make_session_store
 from app.dependencies import get_chat_service
 from app.errors import StorageUnavailableError
+from app.jobs.purge import purge
 from app.main import app
 from app.services.chat_service import ChatService
 from tests.test_checkpointer import graph_on, postgres, settings_for  # noqa: F401  (postgres is a fixture)

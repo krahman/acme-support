@@ -8,9 +8,9 @@ from fastapi.testclient import TestClient
 from langchain_core.messages import AIMessage
 from langgraph.checkpoint.memory import InMemorySaver
 
-from app.ai.locks import InProcessLocks, open_session_locks
 from app.ai.tools.orders import ORDERS, make_order_tool
 from app.api.schema import ChatRequest, ChatResponse
+from app.db.session_locks import InProcessLocks, open_session_locks
 from app.dependencies import get_chat_service
 from app.errors import SessionBusyError, StorageUnavailableError
 from app.graph import build_graph

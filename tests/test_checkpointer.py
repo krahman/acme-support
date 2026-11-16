@@ -5,10 +5,10 @@ import psycopg
 import pytest
 from langgraph.checkpoint.memory import InMemorySaver
 
-from app.ai.checkpointer import open_checkpointer
 from app.ai.tools.orders import ORDERS, make_order_tool
 from app.bootstrap import run
 from app.config import Settings
+from app.db.checkpointer import open_checkpointer
 from app.graph import build_graph
 from tests.test_sessions import ScriptedLLM, grounded, texts
 

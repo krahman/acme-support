@@ -1,14 +1,11 @@
-import hashlib
-import json
 import logging
 import os
 
-from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from app.ai.rag.chunks import chunk_documents, index_fingerprint
 from app.ai.rag.loader import load_documents
 from app.config import Settings
 
@@ -17,15 +14,6 @@ log = logging.getLogger("genai.rag")
 
 def make_embeddings(settings: Settings) -> Embeddings:
     return OpenAIEmbeddings(model=settings.embedding_model, api_key=settings.openai_api_key)
-
-
-def index_fingerprint(settings: Settings, docs: list[Document]) -> str:
-    """Hash of everything that changes the vectors: KB content and the settings that shape them."""
-    h = hashlib.sha256(json.dumps([settings.embedding_model, settings.chunk_size, settings.chunk_overlap]).encode())
-    for d in docs:
-        h.update(d.metadata["source"].encode())
-        h.update(d.page_content.encode())
-    return h.hexdigest()[:16]
 
 
 def get_vector_store(settings: Settings, embeddings: Embeddings | None = None) -> InMemoryVectorStore:
@@ -42,10 +30,7 @@ def get_vector_store(settings: Settings, embeddings: Embeddings | None = None) -
         except Exception:
             log.warning("vector index %s is unreadable, rebuilding", path.name, exc_info=True)
 
-    chunks = RecursiveCharacterTextSplitter(
-        chunk_size=settings.chunk_size,
-        chunk_overlap=settings.chunk_overlap,
-    ).split_documents(docs)
+    chunks = chunk_documents(settings, docs)
     store = InMemoryVectorStore.from_documents(chunks, embeddings)
     log.info("built vector index %s (%d chunks)", path.name, len(chunks))
 

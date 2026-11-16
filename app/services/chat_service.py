@@ -6,10 +6,10 @@ from langfuse.langchain import CallbackHandler
 from langgraph.errors import GraphRecursionError
 from langgraph.graph.state import CompiledStateGraph
 
-from app.ai.locks import InProcessLocks, SessionLocks
-from app.ai.sessions import NullSessionStore, SessionStore
 from app.api.schema import ChatRequest, ChatResponse
 from app.bootstrap import run
+from app.db.session_locks import InProcessLocks, SessionLocks
+from app.db.sessions import NullSessionStore, SessionStore
 from app.errors import (
     AgentLoopError,
     StorageUnavailableError,

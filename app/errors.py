@@ -40,3 +40,9 @@ class SessionBusyError(AppError):
     status_code = 409
     code = "session_busy"
     message = "Your previous message in this conversation is still being answered. Please wait and try again."
+
+
+class KnowledgeBaseUnavailableError(AppError):
+    status_code = 503
+    code = "knowledge_base_unavailable"
+    message = "The knowledge base is temporarily unavailable. Please try again shortly."

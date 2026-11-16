@@ -6,15 +6,14 @@ from langgraph.graph.state import CompiledStateGraph
 
 from app.ai.guardrails import current_turn, make_scope_checker
 from app.ai.llm import build_llm
-from app.ai.rag.store import get_vector_store
+from app.ai.rag.types import SimilarityStore
 from app.ai.tools.knowledge import make_search_tool
 from app.ai.tools.orders import ORDERS, make_order_tool
 from app.config import Settings
 from app.graph import build_graph
 
 
-def build_agent(settings: Settings, checkpointer: BaseCheckpointSaver) -> CompiledStateGraph:
-    store = get_vector_store(settings)
+def build_agent(settings: Settings, checkpointer: BaseCheckpointSaver, store: SimilarityStore) -> CompiledStateGraph:
     tools = [
         make_search_tool(store, settings.retrieval_k, settings.retrieval_score_threshold),
         make_order_tool(ORDERS),

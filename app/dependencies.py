@@ -4,8 +4,8 @@ from fastapi import Depends, Request
 from langfuse import Langfuse
 from langgraph.graph.state import CompiledStateGraph
 
-from app.ai.locks import SessionLocks
-from app.ai.sessions import SessionStore
+from app.db.session_locks import SessionLocks
+from app.db.sessions import SessionStore
 from app.services.chat_service import ChatService
 
 

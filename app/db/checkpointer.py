@@ -8,6 +8,7 @@ from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
 from app.config import Settings
+from app.db.advisory import schema_lock
 
 
 @contextmanager
@@ -31,7 +32,8 @@ def open_checkpointer(settings: Settings) -> Iterator[BaseCheckpointSaver]:
     pool.open(wait=True, timeout=settings.db_timeout_seconds)  # fail fast at startup if the DB is down
     try:
         saver = PostgresSaver(pool)
-        saver.setup()
+        with schema_lock(pool):  # replicas starting together must not run the migration at the same time
+            saver.setup()
         yield saver
     finally:
         pool.close()
