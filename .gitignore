@@ -2,3 +2,12 @@
 .idea
 __pycache__
 .index
+
+# terraform: state and local settings never go in git (state holds generated passwords and keys)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+backend.hcl
+crash.log
