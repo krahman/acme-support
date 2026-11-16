@@ -1,7 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).parent.parent
@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     database_url: SecretStr | None = None  # unset: sessions live in memory
     db_pool_min_size: int = 1  # idle connections go stale on a DB restart; fewer means faster recovery
     db_pool_max_size: int = 10
+    session_retention_days: int = Field(default=30, gt=0)  # idle converstations older than this get purged
     db_timeout_seconds: float = 5  # startup wait and per-request wait for a working connection
 
 

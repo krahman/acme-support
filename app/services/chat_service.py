@@ -1,9 +1,12 @@
+import uuid
+
 import openai
 import psycopg
 from langfuse.langchain import CallbackHandler
 from langgraph.errors import GraphRecursionError
 from langgraph.graph.state import CompiledStateGraph
 
+from app.ai.sessions import NullSessionStore, SessionStore
 from app.api.schema import ChatRequest, ChatResponse
 from app.bootstrap import run
 from app.errors import (
@@ -16,17 +19,20 @@ from app.errors import (
 
 
 class ChatService:
-    def __init__(self, graph: CompiledStateGraph) -> None:
+    def __init__(self, graph: CompiledStateGraph, sessions: SessionStore | None = None) -> None:
         self._graph = graph
+        self._sessions = sessions or NullSessionStore()
 
     def chat(self, req: ChatRequest) -> ChatResponse:
+        session_id = str(req.session_id or uuid.uuid4())
         try:
+            self._sessions.touch(session_id)  # before the turn: the clock starts even if the turn fails
             handler = CallbackHandler()
             result = run(
                 self._graph,
                 req.message,
                 callbacks=[handler],
-                session_id=str(req.session_id) if req.session_id else None,
+                session_id=session_id,
             )
         except openai.APITimeoutError as e:  # before APIConnectionError: it is a subclass
             raise UpstreamTimeoutError() from e
