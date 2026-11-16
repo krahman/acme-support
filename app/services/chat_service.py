@@ -1,11 +1,18 @@
 import openai
+import psycopg
 from langfuse.langchain import CallbackHandler
 from langgraph.errors import GraphRecursionError
 from langgraph.graph.state import CompiledStateGraph
 
 from app.api.schema import ChatRequest, ChatResponse
 from app.bootstrap import run
-from app.errors import AgentLoopError, UpstreamRejectedError, UpstreamTimeoutError, UpstreamUnavailableError
+from app.errors import (
+    AgentLoopError,
+    StorageUnavailableError,
+    UpstreamRejectedError,
+    UpstreamTimeoutError,
+    UpstreamUnavailableError,
+)
 
 
 class ChatService:
@@ -27,6 +34,8 @@ class ChatService:
             raise UpstreamUnavailableError() from e
         except openai.APIStatusError as e:  # 400/401/403/404...: our request or config is wrong
             raise UpstreamRejectedError() from e
+        except psycopg.OperationalError as e:  # includes pool timeouts: the session store is unreachable
+            raise StorageUnavailableError() from e
         except GraphRecursionError as e:
             raise AgentLoopError() from e
         return ChatResponse(

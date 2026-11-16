@@ -39,6 +39,12 @@ class Settings(BaseSettings):
     # conversation
     history_max_messages: int = 10
 
+    # database
+    database_url: SecretStr | None = None  # unset: sessions live in memory
+    db_pool_min_size: int = 1  # idle connections go stale on a DB restart; fewer means faster recovery
+    db_pool_max_size: int = 10
+    db_timeout_seconds: float = 5  # startup wait and per-request wait for a working connection
+
 
 @lru_cache
 def get_settings() -> Settings:

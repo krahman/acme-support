@@ -1,7 +1,7 @@
 import uuid
 
 from langchain_core.runnables import RunnableConfig
-from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph.state import CompiledStateGraph
 
 from app.ai.guardrails import current_turn, make_scope_checker
@@ -13,14 +13,14 @@ from app.config import Settings
 from app.graph import build_graph
 
 
-def build_agent(settings: Settings) -> CompiledStateGraph:
+def build_agent(settings: Settings, checkpointer: BaseCheckpointSaver) -> CompiledStateGraph:
     store = get_vector_store(settings)
     tools = [
         make_search_tool(store, settings.retrieval_k, settings.retrieval_score_threshold),
         make_order_tool(ORDERS),
     ]
     is_in_scope = make_scope_checker(store, settings.scope_score_threshold)
-    return build_graph(build_llm(settings), tools, is_in_scope, InMemorySaver(), settings.history_max_messages)
+    return build_graph(build_llm(settings), tools, is_in_scope, checkpointer, settings.history_max_messages)
 
 
 def run(

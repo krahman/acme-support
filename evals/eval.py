@@ -7,6 +7,7 @@ from datetime import datetime
 
 from langfuse import Evaluation, Langfuse
 from langfuse.langchain import CallbackHandler
+from langgraph.checkpoint.memory import InMemorySaver
 
 from app.bootstrap import build_agent, run
 from app.config import get_settings
@@ -83,7 +84,7 @@ def main() -> None:
         secret_key=settings.langfuse_secret_key.get_secret_value(),
         host=settings.langfuse_host,
     )
-    graph = build_agent(settings)
+    graph = build_agent(settings, InMemorySaver())
 
     def task(*, item, **kwargs):
         return run(graph, item.input["question"], callbacks=[CallbackHandler()])

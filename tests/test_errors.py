@@ -1,5 +1,6 @@
 import httpx
 import openai
+import psycopg
 import pytest
 from fastapi.testclient import TestClient
 from langgraph.errors import GraphRecursionError
@@ -43,6 +44,7 @@ def client():
         (status_error(openai.AuthenticationError, 401), 502, "upstream_rejected"),
         (status_error(openai.BadRequestError, 400), 502, "upstream_rejected"),
         (GraphRecursionError("limit"), 500, "agent_loop"),
+        (psycopg.OperationalError("connection refused"), 503, "storage_unavailable"),
     ],
 )
 def test_known_failures_map_to_status_and_code(client, exc, status, code):

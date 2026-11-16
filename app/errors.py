@@ -28,3 +28,9 @@ class AgentLoopError(AppError):
     status_code = 500
     code = "agent_loop"
     message = "The assistant could not finish answering. Please rephrase and try again."
+
+
+class StorageUnavailableError(AppError):
+    status_code = 503
+    code = "storage_unavailable"
+    message = "Conversation storage is temporarily unavailable. Please try again shortly."
